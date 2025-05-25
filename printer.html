@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Printer Sync Animation</title>
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #D4B89F;
+    margin: 0;
+  }
+
+  .printer-container {
+    position: relative;
+    width: 200px;
+    height: 320px;
+    overflow: visible;
+  }
+
+  /* Paper */
+  .paper-input {
+    position: absolute;
+    top: 75px; /* start visible inside top */
+    left: 50%;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(145deg, #fefefe, #e6e6e6);
+    border-radius: 2px;
+    border: 1.5px solid #aaa;
+    box-shadow:
+      inset 0 2px 6px rgba(255,255,255,0.9),
+      0 2px 5px rgba(0, 0, 0, 0.12),
+      0 8px 8px rgba(0,0,0,0.15);
+    transform: translateX(-50%);
+    z-index: 6; /* between top and body */
+
+    animation: paperSlideDown 7s ease forwards infinite;
+    overflow: hidden;
+  }
+
+  /* Printed text */
+  .paper-text {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    width: 50px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #444;
+    opacity: 0;
+    user-select: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .paper-input.printed .paper-text {
+    opacity: 1;
+  }
+
+  @keyframes paperSlideDown {
+    0% {
+      top: 75px;
+      opacity: 1;
+      z-index: 8;
+    }
+    60% {
+      top: 230px; /* move down through printer body */
+      opacity: 1;
+      z-index: 8; /* in front */
+    }
+    90%, 100% {
+      top: 243px; /* settle in tray */
+      opacity: 1;
+      z-index: 8;
+    }
+  }
+
+  /* Printer top */
+  .printer-top {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    width: 110px;
+    height: 68px;
+    background: linear-gradient(145deg, #2b2b2b, #181818);
+    border-radius: 6px;
+    box-shadow:
+      inset 0 4px 5px rgba(255,255,255,0.1),
+      inset 0 -4px 6px rgba(0,0,0,0.8),
+      0 4px 6px rgba(0,0,0,0.5);
+    transform: translateX(-50%);
+    z-index: 7;
+  }
+
+  /* Printer body */
+  .printer-body {
+    position: absolute;
+    top: 138px;
+    left: 50%;
+    width: 200px;
+    height: 90px;
+    background: linear-gradient(145deg, #4a4a4a, #2c2c2c);
+    border-radius: 10px;
+    box-shadow:
+      inset 0 4px 8px rgba(255,255,255,0.1),
+      inset 0 -6px 8px rgba(0,0,0,0.7),
+      0 10px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid #111;
+    transform: translateX(-50%);
+    z-index: 8;
+  }
+
+  /* Status light */
+  .status-light {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    top: 18px;
+    right: 20px;
+    z-index: 9;
+    border: 1px solid;
+    background-color: #ff4c3b; /* Red initially */
+    box-shadow:
+      0 0 6px 2px rgba(255,76,59,0.7),
+      0 0 12px 4px rgba(255,76,59,0.4);
+
+    animation: lightToggle 7s infinite;
+  }
+
+  @keyframes lightToggle {
+    0% {
+      background-color: #ff4c3b; /* Red - waiting */
+      border-color: #cc2a1e;
+      box-shadow:
+        0 0 6px 2px rgba(255,76,59,0.7),
+        0 0 12px 4px rgba(255,76,59,0.4);
+    }
+    25% {
+      background-color: #2ed73a; /* Green - printing */
+      border-color: #23972a;
+      box-shadow:
+        0 0 8px 3px rgba(46,215,58,0.8),
+        0 0 16px 5px rgba(46,215,58,0.5);
+    }
+    60%, 100% {
+      background-color: #ff4c3b; /* Back to Red */
+      border-color: #cc2a1e;
+      box-shadow:
+        0 0 6px 2px rgba(255,76,59,0.7),
+        0 0 12px 4px rgba(255,76,59,0.4);
+    }
+  }
+
+  /* Printer bottom */
+  .printer-bottom {
+    position: absolute;
+    top: 228px;
+    left: 50%;
+    width: 100px;
+    height: 45px;
+    background: linear-gradient(145deg, #2a2a2a, #141414);
+    border-radius: 0 0 10px 10px;
+    box-shadow:
+      inset 0 4px 5px rgba(255,255,255,0.15),
+      inset 0 -5px 10px rgba(0,0,0,0.8),
+      0 5px 12px rgba(0, 0, 0, 0.3);
+    transform: translateX(-50%);
+    z-index: 7;
+  }
+
+  /* Slits */
+  .slits {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    width: 70px;
+    height: 15px;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .slit {
+    width: 12px;
+    height: 15px;
+    background: linear-gradient(145deg, #454545, #232323);
+    border-radius: 3px;
+    box-shadow:
+      inset 0 2px 4px rgba(255,255,255,0.2),
+      inset 0 -2px 3px rgba(0,0,0,0.8);
+  }
+
+  /* Tray */
+  .tray {
+    position: absolute;
+    top: 273px;
+    left: 50%;
+    width: 40px;
+    height: 20px;
+    background: linear-gradient(145deg, #2a2a2a, #141414);
+    border-radius: 0 0 8px 8px;
+    box-shadow:
+      inset 0 3px 5px rgba(255,255,255,0.15),
+      inset 0 -4px 8px rgba(0,0,0,0.8),
+      0 4px 8px rgba(0,0,0,0.4);
+    transform: translateX(-50%);
+    z-index: 6;
+  }
+
+  .tray::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 28px;
+    height: 6px;
+    background: linear-gradient(145deg, #454545, #232323);
+    border-radius: 2px;
+    box-shadow:
+      inset 0 2px 4px rgba(255,255,255,0.2),
+      inset 0 -2px 3px rgba(0,0,0,0.8);
+  }
+</style>
+</head>
+<body>
+  <div class="printer-container">
+    <div class="paper-input" id="paper">
+      <div class="paper-text" id="paperText">Subscribe to my channel</div>
+    </div>
+    <div class="printer-top"></div>
+    <div class="printer-body">
+      <div class="status-light" id="statusLight"></div>
+    </div>
+    <div class="printer-bottom">
+      <div class="slits">
+        <div class="slit"></div>
+        <div class="slit"></div>
+        <div class="slit"></div>
+      </div>
+    </div>
+    <div class="tray"></div>
+  </div>
+
+<script>
+  const paper = document.getElementById('paper');
+
+  function togglePrintedText() {
+    setTimeout(() => {
+      paper.classList.add('printed');
+    }, 2000); // After paper starts moving down
+
+    setTimeout(() => {
+      paper.classList.remove('printed');
+    }, 7000); // Before animation repeats
+  }
+
+  togglePrintedText();
+  setInterval(togglePrintedText, 7000);
+</script>
+</body>
+</html>
